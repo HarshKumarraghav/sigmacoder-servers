@@ -1,7 +1,7 @@
 package auth
 
 // The `import` statement is used to import packages that are required for the code to run. In this
-// case, the code is importing the `http` package, the `auth` package from the `sharir/pkg` directory,
+// case, the code is importing the `http` package, the `auth` package from the `sigmacoder/pkg` directory,
 // and the `fiber` package from the `github.com/gofiber/fiber/v2` repository. These packages are used
 // in the code to handle HTTP requests and responses, and to implement user authentication
 // functionality.
