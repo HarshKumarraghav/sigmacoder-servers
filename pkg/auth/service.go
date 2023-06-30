@@ -23,7 +23,7 @@ import (
 // number. It returns a string representing the user ID and an error if any error occurs during the
 // signup process.
 type Service interface {
-	Login(email string, password string) (string, error)
+	Login(email string, password string) (string, time.Time, error)
 	LoginPhoneOtp(phone string) (string, error)
 	SignUp(in InUser) (string, error)
 }
@@ -60,32 +60,33 @@ func (s *Svc) SignUp(in InUser) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return refresh, nil
+	return refresh , nil
 }
 
 
 // The `Login` function is a method of the `Svc` struct that implements the `Login` method of the
 // `Service` interface. It takes an `email` and `password` as input parameters and returns a string and
 // an error.
-func (s *Svc) Login(email string, password string) (string, error) {
+func (s *Svc) Login(email string, password string) (string,  time.Time, error) {
 	user, err := s.repo.ReadByEmail(email)
 	if err != nil {
-		return "", err
+		return "", time.Time{}, err
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return "", err
+		return "", time.Time{}, err
 	}
 	claims := jwt.MapClaims{
 		"userid": user.ID,
 		"email":  user.Email,
-		"exp":    time.Now().Add(time.Hour * 72).Unix(),
+		"exp":    time.Now().Add(time.Hour * 720).Unix(),
 	}
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refresh, err := refreshToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	expirationTime := time.Now().Add(time.Hour * 168)
 	if err != nil {
-		return "", err
+		return "", time.Time{}, err
 	}
-	return refresh, nil
+	return refresh, expirationTime, nil
 
 }
 

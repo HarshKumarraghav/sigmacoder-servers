@@ -34,11 +34,15 @@ func LoginHandler(repo *auth.Repo, svc auth.Service) fiber.Handler {
 		if err := c.BodyParser(&in); err != nil {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error(), "status": "failed1"})
 		}
-		refreshToken, err := svc.Login(in.Email, in.Password)
+		refreshToken, ExpTime, err := svc.Login(in.Email, in.Password)
 		if err != nil {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error(), "status": "failed2"})
 		}
-		return c.Status(200).JSON(fiber.Map{"token": refreshToken, "status": "success"})
+		user, err := repo.ReadByEmail(in.Email)
+		if err != nil {
+			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error(), "status": "failed3"})
+		}
+		return c.Status(200).JSON(fiber.Map{"token": refreshToken, "user": user, "expTime": ExpTime, "status": "success"})
 	}
 }
 
