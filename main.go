@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"sigmacoder/api/routes"
+	"sigmacoder/pkg/allquestions"
 	"sigmacoder/pkg/auth"
 	"sigmacoder/pkg/configuration"
 
@@ -54,6 +55,7 @@ func main() {
 	// MongoDB client connection. This allows the application to interact with the "sigmacoder" database using
 	// the methods provided by the MongoDB Go driver.
 	db := client.Database("sigmacoder")
+
 	// This code is creating a route for the root URL ("/") of the application using the HTTP GET method.
 	// When a user makes a GET request to the root URL, the function passed as the second argument to
 	// `app.Get()` is executed. This function returns a JSON response with a "ping" key and "pong" value,
@@ -69,8 +71,23 @@ func main() {
 	// connection to the MongoDB database. The resulting `userRepo` variable is then used to pass the user
 	// data to the authentication routes defined in the `routes` package.
 	userRepo := auth.NewRepo(db)
+	// The line `userSvc := auth.NewAuthService(userRepo.(*auth.Repo))` is creating a new instance of the
+	// `auth.AuthService` struct, which is used to handle the logic and operations related to user
+	// authentication.
 	userSvc := auth.NewAuthService(userRepo.(*auth.Repo))
-
+	// The line `allquestionRepo := allquestions.NewRepo(db)` is creating a new instance of the
+	// `allquestions.Repo` struct, which is used to interact with the MongoDB database and perform CRUD
+	// (Create, Read, Update, Delete) operations on all question data. The `db` variable, which represents
+	// the MongoDB database connection, is passed as an argument to the `NewRepo()` function to establish a
+	// connection to the database. The resulting `allquestionRepo` variable is then used to pass the all
+	// question data to the routes defined in the `routes` package.
+	allquestionRepo := allquestions.NewRepo(db)
+	// `routes.CreatePhoneOtpRoutes(app, userSvc)` is creating and registering HTTP routes related to phone
+	// OTP (One-Time Password) verification in the Fiber application. It is passing the `app` instance of
+	// the Fiber application and a pointer to the `auth.AuthService` struct instance `userSvc` to the
+	// `CreatePhoneOtpRoutes` function, which will define and register the necessary routes for phone OTP
+	// verification. The `userSvc` instance is used to handle the logic and operations related to phone OTP
+	// verification, such as sending OTPs and verifying OTPs.
 	routes.CreatePhoneOtpRoutes(app, userSvc)
 	// `routes.CreateAuthRoutes(app, userRepo.(*auth.Repo))` is creating and registering HTTP routes
 	// related to user authentication in the Fiber application. It is passing the `app` instance of the
@@ -79,9 +96,18 @@ func main() {
 	// authentication. The `userRepo.(*auth.Repo)` syntax is used to convert the `userRepo` variable to a
 	// pointer to the `auth.Repo` struct type, which is required by the `CreateAuthRoutes` function.
 	routes.CreateAuthRoutes(app, userRepo.(*auth.Repo), userSvc)
+	// `routes.CreateAllQuestionRoutes(app, allquestionRepo.(*allquestions.Repo))` is creating and
+	// registering HTTP routes related to all questions in the Fiber application. It is passing the `app`
+	// instance of the Fiber application and a pointer to the `allquestions.Repo` struct instance
+	// `allquestionRepo` to the `CreateAllQuestionRoutes` function, which will define and register the
+	// necessary routes for all questions. The `allquestionRepo.(*allquestions.Repo)` syntax is used to
+	// convert the `allquestionRepo` variable to a pointer to the `allquestions.Repo` struct type, which is
+	// required by the `CreateAllQuestionRoutes` function.
+	routes.CreateAllQuestionRoutes(app, allquestionRepo.(*allquestions.Repo))
 	// `log.Panic(app.Listen(":" + os.Getenv("PORT")))` is starting the Fiber application and listening for
 	// incoming HTTP requests on the port specified in the `PORT` environment variable. If an error occurs
 	// while starting the application or listening for requests, the program will log the error and exit
 	// using `log.Panic()`.
+
 	log.Panic(app.Listen(":" + os.Getenv("PORT")))
 }
