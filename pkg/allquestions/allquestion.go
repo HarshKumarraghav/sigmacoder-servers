@@ -8,6 +8,6 @@ type AllQuestion struct {
 	Category string             `json:"Category"`
 	Name     string             `json:"Name"`
 	Link     string             `json:"Link"`
-	ID0      int                `json:"Id"`
+	Id       int                `json:"Id"`
 	Level    string             `json:"Level"`
 }
