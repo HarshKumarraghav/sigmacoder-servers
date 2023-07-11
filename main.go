@@ -97,17 +97,14 @@ func main() {
 	// pointer to the `auth.Repo` struct type, which is required by the `CreateAuthRoutes` function.
 	routes.CreateAuthRoutes(app, userRepo.(*auth.Repo), userSvc)
 	// `routes.CreateAllQuestionRoutes(app, allquestionRepo.(*allquestions.Repo))` is creating and
-	// registering HTTP routes related to all questions in the Fiber application. It is passing the `app`
-	// instance of the Fiber application and a pointer to the `allquestions.Repo` struct instance
+	// registering HTTP routes related to all question data in the Fiber application. It is passing the
+	// `app` instance of the Fiber application and a pointer to the `allquestions.Repo` struct instance
 	// `allquestionRepo` to the `CreateAllQuestionRoutes` function, which will define and register the
-	// necessary routes for all questions. The `allquestionRepo.(*allquestions.Repo)` syntax is used to
-	// convert the `allquestionRepo` variable to a pointer to the `allquestions.Repo` struct type, which is
-	// required by the `CreateAllQuestionRoutes` function.
+	// necessary routes for all question data. The `allquestionRepo.(*allquestions.Repo)` syntax is used
+	// to convert the `allquestionRepo` variable to a pointer to the `allquestions.Repo` struct type,
+	// which is required by the `CreateAllQuestionRoutes` function.
 	routes.CreateAllQuestionRoutes(app, allquestionRepo.(*allquestions.Repo))
-	// `log.Panic(app.Listen(":" + os.Getenv("PORT")))` is starting the Fiber application and listening for
-	// incoming HTTP requests on the port specified in the `PORT` environment variable. If an error occurs
-	// while starting the application or listening for requests, the program will log the error and exit
-	// using `log.Panic()`.
-
+	// `log.Panic(app.Listen(":" + os.Getenv("PORT")))` is a line of code that starts the Fiber
+	// application and listens for incoming HTTP requests on the specified port.
 	log.Panic(app.Listen(":" + os.Getenv("PORT")))
 }
